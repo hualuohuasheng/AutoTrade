@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+#
+# pip3 install websockets
 
 import datetime
 import uuid
@@ -91,7 +93,13 @@ async def handle_ws_data(*args, **kwargs):
         args: values
         kwargs: key-values.
     """
-    print("callback param", *args, **kwargs)
+    # print("callback param", *args, **kwargs)
+    data_str = json.dumps(*args)
+    if "depth.step" in data_str:
+        # print(data_str)
+        pass
+    elif "kline" in data_str:
+        print(data_str)
 
 
 if __name__ == "__main__":
@@ -107,8 +115,8 @@ if __name__ == "__main__":
     # order_url = 'wss://api.hbdm.vn/notification'
     # 交割合约
     # market_url = 'wss://api.btcgateway.pro/ws'
-    order_url = 'wss://api.btcgateway.pro/notification'
-    kline_url = 'wss://api.btcgateway.pro/ws_index'
+    # order_url = 'wss://api.btcgateway.pro/notification'
+    # kline_url = 'wss://api.btcgateway.pro/ws_index'
 
     # market_subs = [
     #     {
@@ -167,9 +175,10 @@ if __name__ == "__main__":
         try:
             asyncio.get_event_loop().run_until_complete(
                 subscribe(market_url, access_key, secret_key, market_subs, handle_ws_data, auth=False))
-            # asyncio.get_event_loop().run_until_complete(subscribe(order_url, access_key,  secret_key, order_subs, handle_ws_data, auth=True))
+            # asyncio.get_event_loop().run_until_complete(
+            #     subscribe(order_url, access_key, secret_key, order_subs, handle_ws_data, auth=True))
         # except (websockets.exceptions.ConnectionClosed):
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
             print('websocket connection error. reconnect rightnow')
 
