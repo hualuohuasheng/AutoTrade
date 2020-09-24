@@ -15,17 +15,26 @@ param = {
     "SignatureVersion": "2",
     "Timestamp": timestamp
 }
-url = "https://api.btcgateway.pro/swap-api/v1/swap_matchresults"
-sign = generate_signature(url, "POST", param, "/notification", SecretKey)
+# headers
+host = "https://api.btcgateway.pro"
 
-print(sign)
-
-param['Signature'] = sign
 headers = dict()
 headers["Accept"] = "application/json"
 headers["Content-type"] = "application/json"
-res = requests.get("https://api.btcgateway.pro/api/v1/timestamp", params=param, headers=headers)
+
+# 获取服务器时间戳
+sign = generate_signature(host, "GET", param, "/swap-api/v1/timestamp", SecretKey)
+# print(sign)
+r_p_1 = param.copy()
+r_p_1['Signature'] = sign
+res = requests.get("https://api.btcgateway.pro/api/v1/timestamp", params=r_p_1, headers=headers)
 print(res.json())
+
+
+sign = generate_signature(host, "POST", param, "/swap-api/v1/swap_matchresults", SecretKey)
+# print(sign)
+r_p_2 = param.copy()
+r_p_2['Signature'] = sign
 data = {"contract_code": "BTC-USD", "trade_type": 0, "create_date": 30}
-res = requests.post(url, data=json.dumps(data), params=param, headers=headers)
+res = requests.post(host + "/swap-api/v1/swap_matchresults", data=json.dumps(data), params=r_p_2, headers=headers)
 print(res.json())
